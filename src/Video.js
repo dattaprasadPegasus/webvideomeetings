@@ -418,12 +418,13 @@ class Video extends Component {
 								minWidth: cssMesure.minWidth, minHeight: cssMesure.minHeight, maxHeight: "100%", margin: "10px",
 								borderStyle: "solid", borderColor: "#bdbdbd", objectFit: "fill", borderRadius: '10px'
 							}
-							for (let i in css) videoContainer.style[i] = css[i]
+							for (let i in css) video.style[i] = css[i]
 
 							videoContainer.style.setProperty("width",cssMesure.width)
 							videoContainer.style.setProperty("height",cssMesure.height)
-							// video.style.setProperty("width", cssMesure.width)
-							// video.style.setProperty("height", cssMesure.height)
+							video.style.setProperty("width", cssMesure.width)
+							video.style.setProperty("height", cssMesure.height)
+							
 
 							video.setAttribute('data-socket', socketListId)
 							video.srcObject = event.stream
@@ -455,12 +456,12 @@ class Video extends Component {
 
 							// video.append(button)
 
-							videoContainer.appendChild(video)
-							buttonContainer.appendChild(buttonMute)
-							buttonContainer.appendChild(buttonVideo)
-							videoContainer.appendChild(buttonContainer)
+							// videoContainer.appendChild(video)
+							// buttonContainer.appendChild(buttonMute)
+							// buttonContainer.appendChild(buttonVideo)
+							// videoContainer.appendChild(buttonContainer)
 
-							main.appendChild(videoContainer)
+							main.appendChild(video)
 						}
 					}
 
