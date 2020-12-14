@@ -12,6 +12,8 @@ import StopScreenShareIcon from '@material-ui/icons/StopScreenShare'
 import CallEndIcon from '@material-ui/icons/CallEnd'
 import ChatIcon from '@material-ui/icons/Chat'
 
+
+
 import { message } from 'antd'
 import 'antd/dist/antd.css'
 
@@ -19,6 +21,11 @@ import { Row } from 'reactstrap'
 import Modal from 'react-bootstrap/Modal'
 import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
+
+import volume_on from './volume_on.png'
+import volume_off from './volume_off.png'
+import video_on from './video_on.png'
+import video_off from './video_off.png'
 
 const server_url = process.env.NODE_ENV === 'production' ? 'https://video.sebastienbiollo.com' : "http://localhost:4001"
 
@@ -33,7 +40,8 @@ var socket = null
 var socketId = null
 var elms = 0
 
-
+var isGlobalUser = false;
+var mySocketID;
 const UserVideo = (props) => {
 	console.log("props?.user?.stream", props?.user?.stream)
 	return (
@@ -289,14 +297,55 @@ class Video extends Component {
 		return { minWidth, minHeight, width, height }
 	}
 
-	callmuteCalled = (socketID, isMute, videoId, buttonId) => {
-		console.log("socketID, isMute, videoId, buttonId", socketID, isMute, videoId, buttonId)
-		let video = document.getElementById(videoId);
-		video.muted = !video.muted;
-		console.log("video", video)
+	callVideoOnOff = (socketID, isMute, videoId, buttonId) => {
+		if (mySocketID == socketID) {
+			this.setState({ video: !this.state.video }, () => this.getUserMedia())
+		}
 
-		let button = document.getElementById(buttonId)
-		button.title = video.muted ? 'Unmute' : 'Mute'
+	}
+
+	callmuteCalled = (socketID, isMute, videoId, buttonId, selfMutePress) => {
+		// console.log("socketID, isMute, videoId, buttonId", socketID, isMute, videoId, buttonId)
+		// if (isGlobalUser && (mySocketID != socketID)) {
+		// 	let video = document.getElementById('video' + socketID);	
+		// 	video.muted = !video.muted;
+		// 	console.log("video", video)
+
+		// 	let buttonMute = document.getElementById('buttonmute' + socketID)
+		// 	buttonMute.title = video.muted
+
+		// }
+		// else
+		console.log("socketID, isMute, videoId, buttonId, selfMutePress,mySocketID", socketID, isMute, videoId, buttonId, selfMutePress, mySocketID)
+		if (mySocketID == socketID && (selfMutePress == null)) {
+			console.log("executionskdv0")
+			let video = document.getElementById('my-video');
+			video.muted = !video.muted;
+			console.log("video", video)
+
+			this.setState(state => {
+				let audio = !state.audio
+
+				return {
+					audio
+				}
+			}, () => this.getUserMedia())
+		}
+		else {
+
+			let video = document.getElementById(videoId);
+			if (video) {
+				video.muted = !video.muted;
+			}
+
+
+			let buttonMute = document.getElementById(buttonId)
+			if (buttonMute) {
+				buttonMute.src = video.muted ? volume_off : volume_on
+			}
+
+		}
+
 
 	}
 
@@ -313,27 +362,46 @@ class Video extends Component {
 			socket.on('chat-message', this.addMessage)
 
 			socket.on('user-left', (id) => {
-				var videoContainer = document.getElementById(id);
-				if (videoContainer) {
-					videoContainer.parentNode.removeChild(videoContainer);
-				}
+				// var videoContainer = document.getElementById(id);
+				// if (videoContainer) {
+				// 	videoContainer.parentNode.removeChild(videoContainer);
+				// }
 				// let videoContainer = document.querySelector(id)
 				// if (videoContainer !== null) {
 				// 	videoContainer.parentNode.removeChil
 				// }
-				// let video = document.querySelector(`[data-socket="${id}"]`)
-				// if (video !== null) {
-				// 	elms--
-				// 	video.parentNode.removeChild(video)
 
-				// 	let main = document.getElementById('main')
-				// 	this.changeCssVideos(main)
-				// }
+
+
+				let video = document.querySelector(`[data-socket="${id}"]`)
+				if (video !== null) {
+					elms--
+					video.parentNode.removeChild(video)
+
+					let main = document.getElementById('main')
+					this.changeCssVideos(main)
+				}
+
+				let buttonMute = document.getElementById("buttonmute" + id)
+
+				if (buttonMute) {
+					buttonMute.parentNode.removeChild(buttonMute)
+				}
+
+				let buttonVideo = document.getElementById("buttonvideo" + id)
+
+				if (buttonVideo) {
+					buttonVideo.parentNode.removeChild(buttonVideo)
+				}
 			})
 
 			socket.on('callmute', this.callmuteCalled)
+			socket.on('videoOnOff',this.callVideoOnOff)
 
 			socket.on('user-joined', (id, clients) => {
+				if (clients.length == 1) {
+					isGlobalUser = true
+				}
 				console.log("clients, id", clients, id)
 				clients.forEach((socketListId, index) => {
 					console.log("client for loop", socketListId, index)
@@ -348,7 +416,7 @@ class Video extends Component {
 					// Wait for their video stream
 					connections[socketListId].onaddstream = (event) => {
 
-
+						console.log("exe1111")
 						// TODO mute button, full screen button
 						var searchVidep = document.querySelector(`[data-socket="${socketListId}"]`)
 						if (searchVidep !== null) { // if i don't do this check it make an empyt square
@@ -384,21 +452,26 @@ class Video extends Component {
 							buttonContainer.style.setProperty("display", "flex")
 							buttonContainer.style.setProperty("flex-direction", "row")
 							let video = document.createElement('video')
-							let buttonMute = document.createElement('button')
-							let buttonVideo = document.createElement('button')
-							buttonMute.value = true;
-							buttonMute.title = video.muted ? 'Unmute' : 'Mute'
+							let buttonMute = document.createElement('img')
+							let buttonVideo = document.createElement('img')
+							buttonMute.value = true
 							buttonMute.id = "buttonmute" + id
+							buttonMute.src = volume_on
+							buttonVideo.src = video_on
 							buttonMute.style.setProperty("width", "50px")
 							buttonMute.style.setProperty("height", "50px")
+							buttonMute.style.setProperty("margin-left", "-60px")
+							buttonMute.style.setProperty("z-index", "99")
 							buttonMute.style.setProperty("color", "red")
 							buttonMute.style.setProperty("backgroundColor", this.state.userList[index] ? 'black' : 'white')
 
 							buttonVideo.value = true;
-							buttonVideo.title = video.muted ? 'Remove' : 'Call'
 							buttonVideo.id = "buttonvideo" + id
 							buttonVideo.style.setProperty("width", "50px")
 							buttonVideo.style.setProperty("height", "50px")
+							buttonVideo.style.setProperty("margin-left", "-50px")
+							buttonVideo.style.setProperty("margin-top", "110px")
+							buttonVideo.style.setProperty("z-index", "99")
 							buttonVideo.style.setProperty("color", "red")
 							buttonVideo.style.setProperty("backgroundColor", this.state.userList[index] ? 'black' : 'white')
 
@@ -409,8 +482,17 @@ class Video extends Component {
 								console.log("video", video)
 
 								let button = document.getElementById("buttonmute" + id)
-								button.title = video.muted ? 'Unmute' : 'Mute'
+								button.src = video.muted ? volume_off : volume_on
 								socket.emit('callmute', socketListId, video.muted, "video" + id, "buttonmute" + id)
+
+								// socket.emit('chat-message', "jbskdb", "kbcskf")
+							}.bind(this);
+
+							buttonVideo.onclick = function () {
+
+								let button = document.getElementById("buttonvideo" + id)
+								button.src = button.src == video_on ? video_off : video_on
+								socket.emit('videoOnOff', socketListId, button.src == video_on ? false : true, "video" + id, "buttonvideo" + id)
 
 								// socket.emit('chat-message', "jbskdb", "kbcskf")
 							}.bind(this);
@@ -420,11 +502,13 @@ class Video extends Component {
 							}
 							for (let i in css) video.style[i] = css[i]
 
-							videoContainer.style.setProperty("width",cssMesure.width)
-							videoContainer.style.setProperty("height",cssMesure.height)
+							videoContainer.style.setProperty("width", cssMesure.width)
+							videoContainer.style.setProperty("height", cssMesure.height)
 							video.style.setProperty("width", cssMesure.width)
 							video.style.setProperty("height", cssMesure.height)
-							
+
+
+
 
 							video.setAttribute('data-socket', socketListId)
 							video.srcObject = event.stream
@@ -432,6 +516,7 @@ class Video extends Component {
 							video.playsinline = true
 							video.muted = false
 							video.id = "video" + id
+
 
 							let user = {
 								stream: event.stream,
@@ -454,14 +539,21 @@ class Video extends Component {
 							// 	};
 							// });
 
-							// video.append(button)
+							// video.append(buttonMute)
 
 							// videoContainer.appendChild(video)
 							// buttonContainer.appendChild(buttonMute)
 							// buttonContainer.appendChild(buttonVideo)
 							// videoContainer.appendChild(buttonContainer)
 
+							mySocketID = id;
+
 							main.appendChild(video)
+							if (isGlobalUser) {
+								main.appendChild(buttonMute)
+								main.appendChild(buttonVideo)
+							}
+
 						}
 					}
 
@@ -514,7 +606,11 @@ class Video extends Component {
 	handleVideo = () => this.setState({ video: !this.state.video }, () => this.getUserMedia())
 	handleAudio = (e) => {
 		console.log("THIS IS HANDEL AUDIO----", e.target)
-		this.setState({ audio: !this.state.audio }, () => this.getUserMedia())
+		this.setState({ audio: !this.state.audio }, () => {
+			let selfMutePress = true;
+			this.getUserMedia()
+			socket.emit('callmute', mySocketID, this.state.audio, "video" + mySocketID, "buttonmute" + mySocketID, selfMutePress)
+		})
 	}
 	handleScreen = () => this.setState({ screen: !this.state.screen }, () => this.getDislayMedia())
 
@@ -594,7 +690,7 @@ class Video extends Component {
 			)
 		}
 
-		console.log("this.state.userList", this.state.userList)
+		console.log("this.state.audio", this.state.audio)
 
 		return (
 			<div>
@@ -644,11 +740,12 @@ class Video extends Component {
 							</div>
 
 							<Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
-								<video id="my-video" ref={this.localVideoref} autoPlay muted style={{
+								<video id="my-video" ref={this.localVideoref} autoPlay muted={this.state.audio} style={{
 									borderStyle: "solid", borderColor: "#bdbdbd", margin: "10px", objectFit: "fill",
 									borderRadius: "10px",
 									width: "100%", height: "100%"
 								}}></video>
+
 
 								{/* {this.state.userList.map((user, index) => {
 									return <video id={"my-video" + index.toString()} autoPlay muted style={{
@@ -662,7 +759,7 @@ class Video extends Component {
 								})
 
 								} */}
-								{/* <div className="btn-down" style={{ backgroundColor: "whitesmoke", color: "whitesmoke", textAlign: "center" }}>
+								<div className="btn-down" style={{ backgroundColor: "whitesmoke", color: "whitesmoke", textAlign: "center" }}>
 									<IconButton style={{ color: "#424242" }} onClick={this.handleVideo}>
 										{(this.state.video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
 									</IconButton>
@@ -686,7 +783,7 @@ class Video extends Component {
 											<ChatIcon />
 										</IconButton>
 									</Badge>
-								</div> */}
+								</div>
 							</Row>
 						</div>
 					</div>

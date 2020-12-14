@@ -56,9 +56,14 @@ io.on('connection', (socket) => {
 		io.to(toId).emit('signal', socket.id, message)
 	})
 
-	socket.on('callmute', (socketID, isMute, videoId, buttonId) => {
+	socket.on('callmute', (socketID, isMute, videoId, buttonId, selfMutePress) => {
 		console.log("socketID, isMute, videoId, buttonId", socketID, isMute, videoId, buttonId)
-		io.to(socketID).emit('callmute', socketID, isMute, videoId, buttonId)
+		io.to(socketID).emit('callmute', socketID, isMute, videoId, buttonId, selfMutePress)
+	})
+
+	socket.on('videoOnOff', (socketID, isVideoOnOff, videoId, buttonId) => {
+		console.log("socketID, isVideoOnOff, videoId, buttonId",socketID, isVideoOnOff, videoId, buttonId)
+		io.to(socketID).emit('videoOnOff', socketID, isVideoOnOff, videoId, buttonId)
 	})
 
 	socket.on('chat-message', (data, sender) => {
