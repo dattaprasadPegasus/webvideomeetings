@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import io from 'socket.io-client'
 import faker from "faker"
 
-import { IconButton, Badge, Input, Button } from '@material-ui/core'
+import { IconButton, Badge, Input, Button, Tab, Tabs } from '@material-ui/core'
 import VideocamIcon from '@material-ui/icons/Videocam'
 import VideocamOffIcon from '@material-ui/icons/VideocamOff'
 import MicIcon from '@material-ui/icons/Mic'
@@ -10,6 +10,7 @@ import MicOffIcon from '@material-ui/icons/MicOff'
 import ScreenShareIcon from '@material-ui/icons/ScreenShare'
 import StopScreenShareIcon from '@material-ui/icons/StopScreenShare'
 import CallEndIcon from '@material-ui/icons/CallEnd'
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ChatIcon from '@material-ui/icons/Chat'
 
 
@@ -19,6 +20,7 @@ import 'antd/dist/antd.css'
 
 import { Row } from 'reactstrap'
 import Modal from 'react-bootstrap/Modal'
+import swal from 'sweetalert';
 import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 
@@ -26,8 +28,9 @@ import volume_on from './volume_on.png'
 import volume_off from './volume_off.png'
 import video_on from './video_on.png'
 import video_off from './video_off.png'
+import remove_person from './video_off.png'
 
-const server_url = process.env.NODE_ENV === 'production' ? 'https://video.sebastienbiollo.com' : "http://localhost:4001"
+const server_url = process.env.NODE_ENV === 'production' ? 'http://localhost:4001' : "http://localhost:4001"
 
 var connections = {}
 const peerConnectionConfig = {
@@ -79,7 +82,9 @@ class Video extends Component {
 			username: faker.internet.userName(),
 			userList: [],
 			isMute: false,
-			buttonText: 'Mute'
+			buttonText: 'Mute',
+			selected: false,
+			value: 0
 		}
 		connections = {}
 
@@ -304,6 +309,12 @@ class Video extends Component {
 
 	}
 
+	callRemovePeople = (socketID) => {
+		if (mySocketID == socketID) {
+			this.handleEndCall()
+		}
+	}
+
 	callmuteCalled = (socketID, isMute, videoId, buttonId, selfMutePress) => {
 		// console.log("socketID, isMute, videoId, buttonId", socketID, isMute, videoId, buttonId)
 		// if (isGlobalUser && (mySocketID != socketID)) {
@@ -393,10 +404,18 @@ class Video extends Component {
 				if (buttonVideo) {
 					buttonVideo.parentNode.removeChild(buttonVideo)
 				}
+
+				let buttonRemovePeople = document.getElementById("buttonremovepeople" + id)
+
+				if (buttonRemovePeople) {
+					buttonRemovePeople.parentNode.removeChild(buttonRemovePeople)
+				}
 			})
 
 			socket.on('callmute', this.callmuteCalled)
-			socket.on('videoOnOff',this.callVideoOnOff)
+			socket.on('videoOnOff', this.callVideoOnOff)
+
+			socket.on('remove_user', this.callRemovePeople)
 
 			socket.on('user-joined', (id, clients) => {
 				if (clients.length == 1) {
@@ -454,10 +473,12 @@ class Video extends Component {
 							let video = document.createElement('video')
 							let buttonMute = document.createElement('img')
 							let buttonVideo = document.createElement('img')
+							let buttonRemovePeople = document.createElement('img')
+
 							buttonMute.value = true
 							buttonMute.id = "buttonmute" + id
 							buttonMute.src = volume_on
-							buttonVideo.src = video_on
+							buttonMute.style.setProperty("cursor", "pointer")
 							buttonMute.style.setProperty("width", "50px")
 							buttonMute.style.setProperty("height", "50px")
 							buttonMute.style.setProperty("margin-left", "-60px")
@@ -465,8 +486,12 @@ class Video extends Component {
 							buttonMute.style.setProperty("color", "red")
 							buttonMute.style.setProperty("backgroundColor", this.state.userList[index] ? 'black' : 'white')
 
+
+
 							buttonVideo.value = true;
 							buttonVideo.id = "buttonvideo" + id
+							buttonVideo.src = video_on
+							buttonVideo.style.setProperty("cursor", "pointer")
 							buttonVideo.style.setProperty("width", "50px")
 							buttonVideo.style.setProperty("height", "50px")
 							buttonVideo.style.setProperty("margin-left", "-50px")
@@ -474,6 +499,18 @@ class Video extends Component {
 							buttonVideo.style.setProperty("z-index", "99")
 							buttonVideo.style.setProperty("color", "red")
 							buttonVideo.style.setProperty("backgroundColor", this.state.userList[index] ? 'black' : 'white')
+
+							buttonRemovePeople.value = true
+							buttonRemovePeople.id = "buttonremovepeople" + id
+							buttonRemovePeople.src = remove_person
+							buttonRemovePeople.style.setProperty("cursor", "pointer")
+							buttonRemovePeople.style.setProperty("width", "50px")
+							buttonRemovePeople.style.setProperty("height", "50px")
+							buttonRemovePeople.style.setProperty("margin-left", "-50px")
+							buttonRemovePeople.style.setProperty("margin-top", "220px")
+							buttonRemovePeople.style.setProperty("z-index", "99")
+							buttonRemovePeople.style.setProperty("color", "red")
+							buttonRemovePeople.style.setProperty("backgroundColor", this.state.userList[index] ? 'black' : 'white')
 
 
 							buttonMute.onclick = function () {
@@ -483,7 +520,11 @@ class Video extends Component {
 
 								let button = document.getElementById("buttonmute" + id)
 								button.src = video.muted ? volume_off : volume_on
+								console.log("callmute called")
 								socket.emit('callmute', socketListId, video.muted, "video" + id, "buttonmute" + id)
+								console.log("send event to server")
+								// socket.broadcast('callmute', socketListId, video.muted, "video" + id, "buttonmute" + id)
+								// socket.broadcast("callmute_broadcast")
 
 								// socket.emit('chat-message', "jbskdb", "kbcskf")
 							}.bind(this);
@@ -493,6 +534,16 @@ class Video extends Component {
 								let button = document.getElementById("buttonvideo" + id)
 								button.src = button.src == video_on ? video_off : video_on
 								socket.emit('videoOnOff', socketListId, button.src == video_on ? false : true, "video" + id, "buttonvideo" + id)
+
+								// socket.emit('chat-message', "jbskdb", "kbcskf")
+							}.bind(this);
+
+
+							buttonRemovePeople.onclick = function () {
+
+								// let button = document.getElementById("buttonvideo" + id)
+								// button.src = button.src == video_on ? video_off : video_on
+								socket.emit('remove_user', socketListId)
 
 								// socket.emit('chat-message', "jbskdb", "kbcskf")
 							}.bind(this);
@@ -552,6 +603,7 @@ class Video extends Component {
 							if (isGlobalUser) {
 								main.appendChild(buttonMute)
 								main.appendChild(buttonVideo)
+								main.appendChild(buttonRemovePeople)
 							}
 
 						}
@@ -612,6 +664,27 @@ class Video extends Component {
 			socket.emit('callmute', mySocketID, this.state.audio, "video" + mySocketID, "buttonmute" + mySocketID, selfMutePress)
 		})
 	}
+
+	onChangeHandler = (event) => {
+		console.log(event.target.files)
+		swal({
+			title: "Upload Successful",
+			icon: "success",
+			button: "Close",
+		});
+	}
+
+	handleDocumentUpload = (e) => {
+		console.log("THIS IS HANDEL AUDIO----", e.target)
+		this.upload.click()
+		console.log(this.upload.files)
+		this.setState({ audio: !this.state.audio }, () => {
+			let selfMutePress = true;
+			this.getUserMedia()
+			socket.emit('callmute', mySocketID, this.state.audio, "video" + mySocketID, "buttonmute" + mySocketID, selfMutePress)
+		})
+	}
+
 	handleScreen = () => this.setState({ screen: !this.state.screen }, () => this.getDislayMedia())
 
 	handleEndCall = () => {
@@ -620,6 +693,16 @@ class Video extends Component {
 			tracks.forEach(track => track.stop())
 		} catch (e) { }
 		window.location.href = "/"
+	}
+	handleTabChange = (e) => {
+		if (e.target.innerText.indexOf('PRIVATE') > -1) {
+			this.setState({ value: 1 })
+			this.setState({ selected: false })
+		} else {
+			this.setState({ value: 0 })
+
+			this.setState({ selected: true })
+		}
 	}
 
 	openChat = () => this.setState({ showModal: true, newmessages: 0 })
@@ -717,12 +800,26 @@ class Video extends Component {
 							<Modal.Header closeButton>
 								<Modal.Title>Chat Room</Modal.Title>
 							</Modal.Header>
+
 							<Modal.Body style={{ overflow: "auto", overflowY: "auto", height: "400px", textAlign: "left" }} >
-								{this.state.messages.length > 0 ? this.state.messages.map((item, index) => (
-									<div key={index} style={{ textAlign: "left" }}>
-										<p style={{ wordBreak: "break-all" }}><b>{item.sender}</b>: {item.data}</p>
-									</div>
-								)) : <p>No message yet</p>}
+								<Tabs indicatorColor="primary"
+									textColor="primary"
+									centered value={this.state.value} onChange={e => this.handleTabChange(e)}>
+									<Tab label="public chat" >
+										
+									</Tab>
+									<Tab label="private chat"></Tab>
+								</Tabs>
+
+
+								{/* {this.state.messages.length > 0 ? this.state.messages.map((item, index) => (
+											<div key={index} style={{ textAlign: "left" }}>
+												<p style={{ wordBreak: "break-all" }}><b>{item.sender}</b>: {item.data}</p>
+											</div>
+										)) : <p>No message yet</p>} */}
+
+
+
 							</Modal.Body>
 							<Modal.Footer className="div-send-msg">
 								<Input placeholder="Message" value={this.state.message} onChange={e => this.handleMessage(e)} />
@@ -744,21 +841,10 @@ class Video extends Component {
 									borderStyle: "solid", borderColor: "#bdbdbd", margin: "10px", objectFit: "fill",
 									borderRadius: "10px",
 									width: "100%", height: "100%"
-								}}></video>
+								}}>
 
+								</video>
 
-								{/* {this.state.userList.map((user, index) => {
-									return <video id={"my-video" + index.toString()} autoPlay muted style={{
-										borderStyle: "solid", borderColor: "#bdbdbd", margin: "10px", objectFit: "fill",
-										borderRadius: "10px",
-										width: 200, height: 200
-									}}
-										src={user?.stream}
-										key={index}
-									></video>
-								})
-
-								} */}
 								<div className="btn-down" style={{ backgroundColor: "whitesmoke", color: "whitesmoke", textAlign: "center" }}>
 									<IconButton style={{ color: "#424242" }} onClick={this.handleVideo}>
 										{(this.state.video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
@@ -766,6 +852,11 @@ class Video extends Component {
 
 									<IconButton style={{ color: "#f44336" }} onClick={this.handleEndCall}>
 										<CallEndIcon />
+									</IconButton>
+									<input id="myInput" type="file" ref={(ref) => this.upload = ref} style={{ display: 'none' }} onChange={this.onChangeHandler} />
+
+									<IconButton style={{ color: "#424242" }} onClick={e => this.handleDocumentUpload(e)}>
+										<CloudUploadIcon />
 									</IconButton>
 
 									<IconButton style={{ color: "#424242" }} onClick={e => this.handleAudio(e)}>

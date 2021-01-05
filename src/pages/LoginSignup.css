@@ -1,0 +1,70 @@
+.mainDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vh;
+    flex: 1;
+}
+.container {
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+    width: 512px;
+    height: 360px;
+    margin: 0 0 0 0;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 20px 0 #d8d8d8;
+    background-color: #ffffff;
+  }
+  .logo {
+    width: 150px;
+    height: 90px;
+    object-fit: contain;
+  }
+  .sign-in {
+    width: 368px;
+    height: 48px;
+    margin: 53.8px 0 32.2px;
+    object-fit: contain;
+    border-radius: 6px;
+    border-color: transparent;
+    background-color: #3398fd;
+  }
+  .join-in {
+    width: 368px;
+    height: 48px;
+    margin: 0 0 0 0;
+    object-fit: contain;
+    border-radius: 6px;
+    border: solid 1px #0091f6;
+  }
+  .Sign-In {
+    width: 54px;
+    height: 17px;
+    object-fit: contain;
+    font-family: Roboto-SemiBold;
+    font-size: 17px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.35;
+    letter-spacing: normal;
+    text-align: left;
+    color: white;
+  }
+  .Join-Meeting {
+    width: 98px;
+    height: 17px;
+    object-fit: contain;
+    font-family: Roboto-SemiBold;
+    font-size: 17px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.35;
+    letter-spacing: normal;
+    text-align: left;
+    color: #3398fd;
+  }
