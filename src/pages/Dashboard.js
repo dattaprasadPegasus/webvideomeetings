@@ -21,6 +21,7 @@ import messages from './../assets/images/messages.png'
 import settings from './../assets/images/settings.png'
 import end_call from './../assets/images/end_call.png'
 import attendies from './../assets/images/attendies.png'
+import dashboard_logo from './../assets/images/dashboard_logo.png'
 
 
 const server_url = process.env.NODE_ENV === 'production' ? 'http://localhost:4001' : "http://localhost:4001"
@@ -751,44 +752,81 @@ class Dashboard extends React.Component {
 		}
 
         return(
-            <>
-            <body>
-            <div className="mainDiv-Dashboard">
-            <Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
+			<div className="mainDiv-Dashboard">
+				<Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
 								<video id="my-video" ref={this.localVideoref} autoPlay muted={this.state.audio} style={{
-									borderStyle: "solid", borderColor: "#bdbdbd", margin: "10px", objectFit: "fill",
+									borderStyle: "solid", borderColor: "#bdbdbd", objectFit: "fill",
 									borderRadius: "10px",
-									width: "100%", height: "100%"
+									width: "100%", height: '80vh'
 								}}>
 
 								</video>
                                 </Row>
-            </div></body>
-            <footer className="footer">
-                <div className="interpreter-container">
-                    <div className="original-audio-container">
-                        <span className="Original-Audio">Original Audio</span>
+								// <footer className="footer">
+             <div className="interpreter-container">
+                 <div className="original-audio-container">
+                     <span className="Original-Audio">Original Audio</span>
                         <img src={arrow_up} className="arrow-up"/>
-                    </div>
-                    <span className="Interpreting-languages">Interpreting languages</span>
-                </div>
-                 <div className="left-footer-button-container">
-                         <ImageButton active={audio_on} inactive={audio_off} title="Mic" isChangeble={true} onClick={(val) => {console.log(val)}}/>
-                         <ImageButton active={video_on} inactive={video_off} title="Camera" isChangeble={true} onClick={(val) => {console.log(val)}}/>
-                         <ImageButton active={volume}  title="Volume" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
                  </div>
-                 <div className="record-container">
-                 <ImageButton active={record}  title="Record" isChangeble={false} onClick={(val) => {console.log(val)}}/>
-                 </div>
-                 <div className="right-footer-button-container">
-                         <ImageButton active={share_screen}  title="Screen" isChangeble={false} onClick={(val) => {console.log(val)}}/>
-                         <ImageButton active={attendies}  title="Attendees" isChangeble={false} onClick={(val) => {console.log(val)}}/>
-                         <ImageButton active={messages}  title="Chat" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
-                         <ImageButton active={settings}  title="Settings" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
-                         <ImageButton active={end_call}  title="End" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
-                 </div>
-                </footer>
-            </>
+                 <span className="Interpreting-languages">Interpreting languages</span>
+             </div>
+                  <div className="left-footer-button-container">
+                          <ImageButton active={audio_on} inactive={audio_off} title="Mic" isChangeble={true} onClick={(val) => {console.log(val)}}/>
+                          <ImageButton active={video_on} inactive={video_off} title="Camera" isChangeble={true} onClick={(val) => {console.log(val)}}/>
+                          <ImageButton active={volume}  title="Volume" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
+                  </div>
+                  <div className="record-container">
+                  <ImageButton active={record}  title="Record" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+                  </div>
+                  <div className="right-footer-button-container">
+                          <ImageButton active={share_screen}  title="Screen" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+                          <ImageButton active={attendies}  title="Attendees" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+                          <ImageButton active={messages}  title="Chat" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
+                          <ImageButton active={settings}  title="Settings" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
+                          <ImageButton active={end_call}  title="End" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
+                  </div>
+                 </footer>
+			</div>
+            // <>
+            // <body>
+			// 	<img/>
+            // <div className="mainDiv-Dashboard">
+            // <Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
+			// 					<video id="my-video" ref={this.localVideoref} autoPlay muted={this.state.audio} style={{
+			// 						borderStyle: "solid", borderColor: "#bdbdbd", objectFit: "fill",
+			// 						borderRadius: "10px",
+			// 						width: "100%", height: '80vh'
+			// 					}}>
+
+			// 					</video>
+            //                     </Row>
+            // </div>
+			// </body>
+            // <footer className="footer">
+            //     <div className="interpreter-container">
+            //         <div className="original-audio-container">
+            //             <span className="Original-Audio">Original Audio</span>
+            //             <img src={arrow_up} className="arrow-up"/>
+            //         </div>
+            //         <span className="Interpreting-languages">Interpreting languages</span>
+            //     </div>
+            //      <div className="left-footer-button-container">
+            //              <ImageButton active={audio_on} inactive={audio_off} title="Mic" isChangeble={true} onClick={(val) => {console.log(val)}}/>
+            //              <ImageButton active={video_on} inactive={video_off} title="Camera" isChangeble={true} onClick={(val) => {console.log(val)}}/>
+            //              <ImageButton active={volume}  title="Volume" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
+            //      </div>
+            //      <div className="record-container">
+            //      <ImageButton active={record}  title="Record" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+            //      </div>
+            //      <div className="right-footer-button-container">
+            //              <ImageButton active={share_screen}  title="Screen" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+            //              <ImageButton active={attendies}  title="Attendees" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+            //              <ImageButton active={messages}  title="Chat" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
+            //              <ImageButton active={settings}  title="Settings" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
+            //              <ImageButton active={end_call}  title="End" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
+            //      </div>
+            //     </footer>
+            // </>
             
         )
     }
