@@ -40,7 +40,7 @@
     border-radius: 6px;
     border: solid 1px #0091f6;
   }
-  .Sign-In {
+  .Sign-In-Button-Text {
     width: 54px;
     height: 17px;
     object-fit: contain;
@@ -54,7 +54,10 @@
     text-align: left;
     color: white;
   }
-  .Join-Meeting {
+  .Sign-In-Button-Text :link{
+    text-decoration: none;
+  }
+  .Join-Meeting-Button-Text {
     width: 98px;
     height: 17px;
     object-fit: contain;
@@ -67,4 +70,7 @@
     letter-spacing: normal;
     text-align: left;
     color: #3398fd;
+  }
+  .Join-Meeting-Button-Text :link {
+    text-decoration: none;
   }

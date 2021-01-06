@@ -1,7 +1,10 @@
 import React from 'react'
-import './LoginSignup.css'
+
 import logo from  '../assets/logo.png'
-import Input from '../component/Input'
+import {
+    Link
+} from "react-router-dom";
+import './LoginSignup.css'
 class LoginSignup extends React.Component {
     render(){
         return(
@@ -9,10 +12,10 @@ class LoginSignup extends React.Component {
                 <div className="container">
                     <img src={logo} className="logo"/>
                     <button className="sign-in">
-                       <span className="Sign-In"> Sign In </span>
+                    <Link className="Sign-In-Button-Text" to="/signin">Sign In</Link>
                         </button>
                     <button className="join-in">
-                        <span className="Join-Meeting">Join Meeting</span>
+                    <Link className="Join-Meeting-Button-Text" to="/joinmeeting">Join Meeting</Link>
                         </button>
                 </div>
             </div>

@@ -1,0 +1,112 @@
+.mainDiv-Dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vh;
+    flex: 1;
+    background-color:  #0a1c2e;
+}
+.flex-container {
+    height: 100vh;
+    width: 100%;
+    /* margin: 0 auto; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.footer {
+    position: absolute;
+    bottom: 5px;
+    height: 110px;
+    width: 100%;
+    padding: 11px 28px 4px 24px;
+    margin: 0 0 0 0;
+    object-fit: contain;
+    opacity: 0.94;
+    -webkit-backdrop-filter: blur(50px);
+    backdrop-filter: blur(50px);
+    border: solid 1px #6ab6bd;
+    background-color: #0a1c2e;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+  }
+
+  .interpreter-container {
+      display: flex;
+      flex-direction: column;
+      flex: 0.1;
+      justify-content: center;
+  }
+  .original-audio-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 242px;
+    height: 60px;
+    margin: 4px 52px 7px 0;
+    padding: 15px 29px 13px 34px;
+    object-fit: contain;
+    border: solid 1px #4e99f6;
+    background-color: #3398fd;
+    border-radius: 20px;
+  }
+  .Original-Audio {
+    width: 141px;
+    height: 32px;
+    margin: 0 20px 0 0;
+    object-fit: contain;
+    font-family: Roboto-Semibold;
+    font-size: 22px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.45;
+    letter-spacing: -0.22px;
+    text-align: left;
+    color: #f4f6f8;
+  }
+  .arrow-up {
+    width: 18px;
+    height: 18px;
+    margin: 0px 0 0px px;
+    object-fit: contain;
+  }
+  .Interpreting-languages {
+    width: 166px;
+    height: 24px;
+    margin: 0 0 0 40px;
+    object-fit: contain;
+    font-family: Roboto-Regular;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: center;
+    color: #d0d0d0;
+  }
+  .left-footer-button-container {
+      display: flex;
+      flex-direction: row;
+      flex: 0.2;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .right-footer-button-container {
+    display: flex;
+    flex-direction: row;
+    flex: 0.3;
+    justify-content: space-between;
+}
+
+  .record-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex: 0.4;  
+  }
