@@ -15,11 +15,11 @@ class App extends Component {
 					<Switch>
 						{/* <Route path="/" exact component={Home} /> */}
 						
-						{/* <Route path="/" exact component={LoginSignup}/> */}
-						<Route path="/signin" exact component={Login}/>
-						<Route path="/joinmeeting" exact component={JoinMeeting}/>
-						<Route path="/" exact component={Dashboard}/>
-						<Route path="/:url" component={Video} />
+						<Route path="/" exact component={LoginSignup}/>
+						 <Route path="/signin" exact component={Login}/>
+						{/*<Route path="/joinmeeting" exact component={JoinMeeting}/> */}
+						<Route path="/:url" exact component={Dashboard}/> 
+						{/* <Route path="/:url" component={Video} /> */}
 						
 					</Switch>
 				</Router>

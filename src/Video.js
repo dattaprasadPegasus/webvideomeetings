@@ -124,6 +124,7 @@ class Video extends Component {
 			video: this.videoAvailable,
 			audio: this.audioAvailable
 		}, () => {
+			console.log("this.state.video,this.state.audio",this.state.video,this.state.audio)
 			this.getUserMedia()
 			this.connectToSocketServer()
 		})
@@ -418,6 +419,7 @@ class Video extends Component {
 			socket.on('remove_user', this.callRemovePeople)
 
 			socket.on('user-joined', (id, clients) => {
+				console.log("user-joined")
 				if (clients.length == 1) {
 					isGlobalUser = true
 				}

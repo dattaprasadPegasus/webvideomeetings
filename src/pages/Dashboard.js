@@ -22,6 +22,7 @@ import settings from './../assets/images/settings.png'
 import end_call from './../assets/images/end_call.png'
 import attendies from './../assets/images/attendies.png'
 import dashboard_logo from './../assets/images/dashboard_logo.png'
+import Interpreter from './../component/Interpreter'
 
 
 const server_url = process.env.NODE_ENV === 'production' ? 'http://localhost:4001' : "http://localhost:4001"
@@ -45,11 +46,11 @@ class Dashboard extends React.Component {
         super(props)
         this.localVideoref = React.createRef()
 
-		this.videoAvailable = false
+		this.videoAvailable = true
 		this.audioAvailable = false
 
 		this.state = {
-			video: false,
+			video: true,
 			audio: false,
 			screen: false,
 			showModal: false,
@@ -63,12 +64,20 @@ class Dashboard extends React.Component {
 			isMute: false,
 			buttonText: 'Mute',
 			selected: false,
-			value: 0
+			value: 0,
+			showInterpreterMenu : false
+
 		}
 		connections = {}
 
 		this.getPermissions()
-    }
+	}
+	
+	componentDidMount(){
+		this.connect()
+	}
+
+
     getPermissions = async () => {
 		try {
 			await navigator.mediaDevices.getUserMedia({ video: true })
@@ -108,7 +117,8 @@ class Dashboard extends React.Component {
 	}
 
 	getUserMedia = () => {
-		if ((this.state.video && this.videoAvailable) || (this.state.audio && this.audioAvailable)) {
+		 if ((this.state.video && this.videoAvailable) || (this.state.audio && this.audioAvailable)) {
+			console.log("true",this.state.video)
 			navigator.mediaDevices.getUserMedia({ video: this.state.video, audio: this.state.audio })
 				.then(this.getUserMediaSuccess)
 				.then((stream) => { })
@@ -633,13 +643,24 @@ class Dashboard extends React.Component {
 		return Object.assign(stream.getVideoTracks()[0], { enabled: false })
 	}
 
-	handleVideo = () => this.setState({ video: !this.state.video }, () => this.getUserMedia())
+	handleVideo = () => {
+		// console.log("this.state.video",this.state.video)
+		// this.setState({
+		// 	video : !this.state.video
+		// })
+
+		console.log("this.state.video")
+		this.setState({ video: !this.state.video }, () => {
+			console.log("this.state.video",this.state.video)
+			this.getUserMedia()
+		})
+	}
 	handleAudio = (e) => {
 		console.log("THIS IS HANDEL AUDIO----", e.target)
 		this.setState({ audio: !this.state.audio }, () => {
-			let selfMutePress = true;
-			this.getUserMedia()
-			socket.emit('callmute', mySocketID, this.state.audio, "video" + mySocketID, "buttonmute" + mySocketID, selfMutePress)
+			// let selfMutePress = true;
+			// this.getUserMedia()
+			// socket.emit('callmute', mySocketID, this.state.audio, "video" + mySocketID, "buttonmute" + mySocketID, selfMutePress)
 		})
 	}
 
@@ -739,7 +760,18 @@ class Dashboard extends React.Component {
 		return matchChrome !== null
 	}
 
+	onClickMute = (val) => {
+		alert("hello",val)
+	}
+
+	show_interpreter = () => {
+		this.setState({
+			showInterpreterMenu : !this.state.showInterpreterMenu
+		})
+	}
+
     render(){
+		const {showInterpreterMenu} = this.state
         if (this.isChrome() === false) {
 			return (
 				<div style={{
@@ -754,7 +786,7 @@ class Dashboard extends React.Component {
         return(
 			<div className="mainDiv-Dashboard">
 				<Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
-								<video id="my-video" ref={this.localVideoref} autoPlay muted={this.state.audio} style={{
+								<video id="my-video" ref={this.localVideoref}  autoPlay muted={this.state.audio} style={{
 									borderStyle: "solid", borderColor: "#bdbdbd", objectFit: "fill",
 									borderRadius: "10px",
 									width: "100%", height: '80vh'
@@ -762,28 +794,32 @@ class Dashboard extends React.Component {
 
 								</video>
                                 </Row>
-								// <footer className="footer">
+								{showInterpreterMenu && <div style={{position : 'absolute', bottom : 150, left : 30  }}>
+										 <Interpreter/>
+										 </div>}
+								 <footer className="footer">
+									
              <div className="interpreter-container">
-                 <div className="original-audio-container">
+                 <div className="original-audio-container" onClick={this.show_interpreter}>
                      <span className="Original-Audio">Original Audio</span>
                         <img src={arrow_up} className="arrow-up"/>
                  </div>
                  <span className="Interpreting-languages">Interpreting languages</span>
              </div>
                   <div className="left-footer-button-container">
-                          <ImageButton active={audio_on} inactive={audio_off} title="Mic" isChangeble={true} onClick={(val) => {console.log(val)}}/>
-                          <ImageButton active={video_on} inactive={video_off} title="Camera" isChangeble={true} onClick={(val) => {console.log(val)}}/>
-                          <ImageButton active={volume}  title="Volume" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
+                          <ImageButton active={audio_on} inactive={audio_off} title="Mic" isChangeble={true} onClickButton={this.handleAudio}/>
+                          <ImageButton active={video_on} inactive={video_off} title="Camera" isChangeble={true} onClickButton={this.handleVideo}/>
+                          <ImageButton active={volume}  title="Volume" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>   
                   </div>
                   <div className="record-container">
-                  <ImageButton active={record}  title="Record" isChangeble={false} onClick={(val) => {console.log(val)}}/>
+                  <ImageButton active={record}  title="Record" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>
                   </div>
                   <div className="right-footer-button-container">
-                          <ImageButton active={share_screen}  title="Screen" isChangeble={false} onClick={(val) => {console.log(val)}}/>
-                          <ImageButton active={attendies}  title="Attendees" isChangeble={false} onClick={(val) => {console.log(val)}}/>
-                          <ImageButton active={messages}  title="Chat" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
-                          <ImageButton active={settings}  title="Settings" isChangeble={false} onClick={(val) => {console.log(val)}}/> 
-                          <ImageButton active={end_call}  title="End" isChangeble={false} onClick={(val) => {console.log(val)}}/>   
+                          <ImageButton active={share_screen}  title="Screen" isChangeble={false} onClickButton={this.handleScreen}/>
+                          <ImageButton active={attendies}  title="Attendees" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>
+                          <ImageButton active={messages}  title="Chat" isChangeble={false} onClickButton={(val) => {console.log(val)}}/> 
+                          <ImageButton active={settings}  title="Settings" isChangeble={false} onClickButton={(val) => {console.log(val)}}/> 
+                          <ImageButton active={end_call}  title="End" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>   
                   </div>
                  </footer>
 			</div>

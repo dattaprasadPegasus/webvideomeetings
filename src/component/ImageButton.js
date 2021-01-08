@@ -11,7 +11,7 @@ function ImageButton(props){
                 if(props?.isChangeble){
                     setActive(!isActive)
                 }
-                props.onClick(isActive)
+                props.onClickButton("test")
                 }}
                 className="image-button"
                 />
