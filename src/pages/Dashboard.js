@@ -22,7 +22,12 @@ import settings from './../assets/images/settings.png'
 import end_call from './../assets/images/end_call.png'
 import attendies from './../assets/images/attendies.png'
 import dashboard_logo from './../assets/images/dashboard_logo.png'
+import logo from './../assets/logo.png'
+
 import Interpreter from './../component/Interpreter'
+import ChatBox from './../component/ChatBox'
+
+
 
 
 const server_url = process.env.NODE_ENV === 'production' ? 'http://localhost:4001' : "http://localhost:4001"
@@ -65,7 +70,8 @@ class Dashboard extends React.Component {
 			buttonText: 'Mute',
 			selected: false,
 			value: 0,
-			showInterpreterMenu : false
+			showInterpreterMenu : false,
+			showChatbox : false
 
 		}
 		connections = {}
@@ -770,8 +776,14 @@ class Dashboard extends React.Component {
 		})
 	}
 
+	show_chatbox = () => {
+		this.setState({
+			showChatbox : !this.state.showChatbox
+		})
+	}
+
     render(){
-		const {showInterpreterMenu} = this.state
+		const {showInterpreterMenu, showChatbox} = this.state
         if (this.isChrome() === false) {
 			return (
 				<div style={{
@@ -785,17 +797,22 @@ class Dashboard extends React.Component {
 
         return(
 			<div className="mainDiv-Dashboard">
+				<header className="header">
+					<img className="dashboard_logo" src={logo}/>
+				</header>
 				<Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
 								<video id="my-video" ref={this.localVideoref}  autoPlay muted={this.state.audio} style={{
-									borderStyle: "solid", borderColor: "#bdbdbd", objectFit: "fill",
-									borderRadius: "10px",
-									width: "100%", height: '80vh'
+									borderStyle: "solid", borderColor: "#515e70", objectFit: "fill",
+									width: "100%", height: '76vh'
 								}}>
 
 								</video>
                                 </Row>
 								{showInterpreterMenu && <div style={{position : 'absolute', bottom : 150, left : 30  }}>
 										 <Interpreter/>
+										 </div>}
+										 {showChatbox && <div style={{position : 'absolute', bottom : 130, right : 30  }}>
+										 <ChatBox/>
 										 </div>}
 								 <footer className="footer">
 									
@@ -810,14 +827,15 @@ class Dashboard extends React.Component {
                           <ImageButton active={audio_on} inactive={audio_off} title="Mic" isChangeble={true} onClickButton={this.handleAudio}/>
                           <ImageButton active={video_on} inactive={video_off} title="Camera" isChangeble={true} onClickButton={this.handleVideo}/>
                           <ImageButton active={volume}  title="Volume" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>   
+						  <ImageButton active={record}  title="Record" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>
                   </div>
                   <div className="record-container">
-                  <ImageButton active={record}  title="Record" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>
+                  
                   </div>
                   <div className="right-footer-button-container">
                           <ImageButton active={share_screen}  title="Screen" isChangeble={false} onClickButton={this.handleScreen}/>
                           <ImageButton active={attendies}  title="Attendees" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>
-                          <ImageButton active={messages}  title="Chat" isChangeble={false} onClickButton={(val) => {console.log(val)}}/> 
+                          <ImageButton active={messages}  title="Chat" isChangeble={false} onClickButton={this.show_chatbox}/> 
                           <ImageButton active={settings}  title="Settings" isChangeble={false} onClickButton={(val) => {console.log(val)}}/> 
                           <ImageButton active={end_call}  title="End" isChangeble={false} onClickButton={(val) => {console.log(val)}}/>   
                   </div>

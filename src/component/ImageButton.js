@@ -2,11 +2,16 @@ import React, { useState } from 'react'
 import './Component.css'
 function ImageButton(props){
     const [isActive, setActive] = useState(true)
+    const [isShow, showView] = useState(false)
     return(
         <>
-         <div className="hide">
-        </div>
-        <div className="main-div">
+        {/* {isShow && 
+            <div className="hide">
+            <span>{props.title}</span>
+       </div>
+        } */}
+         
+        <div className="main-div" onMouseEnter={() => showView(true)} onMouseLeave={() => showView(false)}>
             <img src={isActive ? props?.active : props?.inactive} onClick={() => {
                 if(props?.isChangeble){
                     setActive(!isActive)

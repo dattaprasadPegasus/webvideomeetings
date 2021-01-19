@@ -53,6 +53,7 @@
     letter-spacing: normal;
     text-align: left;
     color: white;
+    text-decoration: none;
   }
   .Sign-In-Button-Text :link{
     text-decoration: none;
